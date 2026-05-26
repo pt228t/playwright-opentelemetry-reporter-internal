@@ -1,0 +1,97 @@
+{
+  "name": "@internal/playwright-opentelemetry-reporter",
+  "version": "0.2.0",
+  "description": "OpenTelemetry reporter for Playwright Test",
+  "packageManager": "yarn@4.15.0",
+  "main": "build/main/index.js",
+  "typings": "build/main/index.d.ts",
+  "module": "build/module/index.js",
+  "license": "Apache-2.0",
+  "keywords": [
+    "playwright",
+    "opentelemetry",
+    "reporter"
+  ],
+  "scripts": {
+    "build": "run-p build:\"*\"",
+    "build:main": "tsc -p tsconfig.json",
+    "build:module": "tsc -p tsconfig.module.json",
+    "otel:down": "docker compose -f docker-compose.local-otel.yml down",
+    "otel:logs": "docker compose -f docker-compose.local-otel.yml logs -f otel-collector",
+    "otel:up": "docker compose -f docker-compose.local-otel.yml up -d",
+    "otel:verify": "node scripts/verify-local-otel.js",
+    "fix": "run-s fix:\"*\"",
+    "fix:prettier": "prettier \"src/**/*.ts\" --write",
+    "fix:lint": "eslint src --ext .ts --fix",
+    "genversion": "genversion --property name,version --esm --semi src/lib/version.ts",
+    "test": "run-s build test:\"*\"",
+    "test:lint": "eslint src --ext .ts",
+    "test:prettier": "prettier \"src/**/*.ts\" --list-different",
+    "test:unit": "ava",
+    "playwright": "playwright test",
+    "watch:build": "tsc -p tsconfig.json -w",
+    "watch:test": "ava --watch",
+    "doc": "run-s doc:html",
+    "doc:html": "typedoc src/ --exclude \"**/*.spec.ts\" --out build/docs",
+    "doc:json": "typedoc src/ --exclude \"**/*.spec.ts\" --json build/docs/typedoc.json"
+  },
+  "engines": {
+    "node": ">=22 <23 || >=24 <25"
+  },
+  "devDependencies": {
+    "@ava/typescript": "^7.0.0",
+    "@opentelemetry/exporter-metrics-otlp-http": "^0.218.0",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.218.0",
+    "@opentelemetry/sdk-node": "^0.218.0",
+    "@playwright/test": "^1.60.0",
+    "@types/node": "^22.10.2",
+    "@typescript-eslint/eslint-plugin": "^8.60.0",
+    "@typescript-eslint/parser": "^8.60.0",
+    "ava": "^8.0.1",
+    "dotenv": "^16.4.7",
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.32.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.8.8",
+    "ts-node": "^10.9.2",
+    "typedoc": "^0.28.19",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "@playwright/test": ">=1.36.0"
+  },
+  "files": [
+    "build/main",
+    "build/module",
+    "!**/*.spec.*",
+    "!**/*.json",
+    "!test",
+    "CHANGELOG.md",
+    "NOTICE.md",
+    "README.md",
+    "!test-results",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "ava": {
+    "failFast": true,
+    "timeout": "60s",
+    "typescript": {
+      "rewritePaths": {
+        "src/": "build/main/"
+      },
+      "compile": false
+    },
+    "files": [
+      "!build/module/**",
+      "!test/e2e/**"
+    ]
+  },
+  "prettier": {
+    "singleQuote": true
+  },
+  "dependencies": {
+    "@opentelemetry/api": "^1.9.0"
+  }
+}

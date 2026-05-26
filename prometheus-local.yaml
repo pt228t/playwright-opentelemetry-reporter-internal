@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s
+
+scrape_configs:
+  - job_name: playwright-opentelemetry-reporter
+    static_configs:
+      - targets:
+          - otel-collector:9464
+    metrics_path: /metrics
